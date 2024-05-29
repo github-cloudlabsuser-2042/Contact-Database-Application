@@ -2,10 +2,7 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "serverName": {
-      "type": "string"
-    },
-    "databaseName": {
+    "webAppName": {
       "type": "string"
     },
     "location": {
@@ -14,31 +11,21 @@
   },
   "resources": [
     {
-      "type": "Microsoft.Sql/servers",
-      "apiVersion": "2020-08-01-preview",
-      "name": "[parameters('serverName')]",
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2016-08-01",
+      "name": "[parameters('webAppName')]",
       "location": "[parameters('location')]",
       "properties": {
-        "administratorLogin": "admin",
-        "administratorLoginPassword": "password"
-      },
-      "resources": [
-        {
-          "type": "databases",
-          "apiVersion": "2020-08-01-preview",
-          "name": "[parameters('databaseName')]",
-          "location": "[parameters('location')]",
-          "dependsOn": [
-            "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
-          ],
-          "properties": {
-            "collation": "SQL_Latin1_General_CP1_CI_AS",
-            "edition": "Standard",
-            "maxSizeBytes": "1073741824",
-            "requestedServiceObjectiveName": "S0"
-          }
+        "serverFarmId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('webAppName'))]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "10.14.1"
+            }
+          ]
         }
-      ]
+      }
     }
   ]
 }
