@@ -124,5 +124,28 @@ namespace CRUD_application_2.Controllers
             // Redirect to the Index action to display the updated list of users
             return RedirectToAction("Index");
         }
+        // POST: User/Search
+        [HttpPost]
+        public ActionResult Search(string searchTerm)
+        {
+            // Search for users whose name or email contains the search term
+            var searchResults = userlist.Where(u => u.Name.Contains(searchTerm) || u.Email.Contains(searchTerm)).ToList();
+
+            // Pass the search results to the Search view
+            var model = new SearchModel
+            {
+                Results = searchResults,
+                SearchTerm = searchTerm
+            };
+            return View(model);
+        }
+
+        // GET: User/Search
+        public ActionResult Search()
+        {
+            // Return the Search view
+            var model = new SearchModel { };
+            return View(model);
+        }
     }
 }
